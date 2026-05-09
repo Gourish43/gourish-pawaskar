@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import {
   addProject, updateProject, getAllProjects,
   slugify, SECTION_TYPES, VISUAL_OPTIONS
