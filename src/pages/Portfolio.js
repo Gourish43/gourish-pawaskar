@@ -5,13 +5,7 @@ import { getAllProjects } from '../store/projectStore';
 import './Portfolio.css';
 
 const FILTERS = ['All', 'UX Design', 'SaaS', 'Research', 'Front-end'];
-const FILTER_MAP = {
-  'All': () => true,
-  'UX Design': p => ['trusting-news','esg-platform','defence-ux'].includes(p.slug),
-  'SaaS': p => ['esg-platform','defence-ux'].includes(p.slug),
-  'Research': p => ['trusting-news'].includes(p.slug),
-  'Front-end': p => ['warehouse-dashboard'].includes(p.slug),
-};
+
 
 export default function Portfolio() {
   const [active, setActive] = useState('All');
