@@ -27,7 +27,6 @@ const DEFAULT_SECTION = (type = 'overview') => ({
 });
 
 export default function AdminProjectForm({ editId, onSave }) {
-  // const navigate = useNavigate();
   const existingProject = editId
     ? getAllProjects().find(p => p.id === editId)
     : null;
@@ -37,7 +36,6 @@ export default function AdminProjectForm({ editId, onSave }) {
   const [desc, setDesc]           = useState(existingProject?.desc || '');
   const [year, setYear]           = useState(existingProject?.year || '');
   const [visual, setVisual]       = useState(existingProject?.visual || 'pv-1');
-  // const [emoji, setEmoji]         = useState(existingProject?.emoji || '📁');
   const [tagInput, setTagInput]   = useState('');
   const [tags, setTags]           = useState(existingProject?.tags || []);
   const [heroStats, setHeroStats]   = useState(existingProject?.heroStats || [{ val: '', label: '' }]);
