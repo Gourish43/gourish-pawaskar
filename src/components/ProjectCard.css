@@ -1,0 +1,112 @@
+/* ── CARD — uniform fixed height, full background ── */
+.proj-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--r);
+  overflow: hidden;
+  /* fixed height — every card identical regardless of content */
+  height: 380px;
+  transition: transform 0.28s var(--ease), box-shadow 0.28s var(--ease);
+}
+.proj-card.featured { height: 420px; }
+
+.proj-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 56px rgba(0,0,0,0.18);
+}
+
+/* ── FULL-BLEED BACKGROUND ── */
+.proj-bg {
+  position: relative;
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* gradient fallback when no thumbnail */
+.proj-bg-gradient {
+  position: absolute; inset: 0;
+}
+.pv-1 { background: linear-gradient(145deg, #C8C4BB 0%, #8C8880 100%); }
+.pv-2 { background: linear-gradient(145deg, #A8C490 0%, #6B9E52 100%); }
+.pv-3 { background: linear-gradient(145deg, #D4B882 0%, #A08848 100%); }
+.pv-4 { background: linear-gradient(145deg, #7EB0D8 0%, #4880B0 100%); }
+.pv-5 { background: linear-gradient(145deg, #B4A8D8 0%, #7860B8 100%); }
+.pv-6 { background: linear-gradient(145deg, #D8A0A0 0%, #B06868 100%); }
+
+/* ── DARK SCRIM — always legible ── */
+.proj-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.82) 0%,
+    rgba(10,10,10,0.28) 55%,
+    rgba(10,10,10,0.04) 100%
+  );
+  transition: background 0.28s;
+}
+.proj-card:hover .proj-scrim {
+  background: linear-gradient(
+    to top,
+    rgba(10,10,10,0.90) 0%,
+    rgba(10,10,10,0.40) 55%,
+    rgba(10,10,10,0.10) 100%
+  );
+}
+
+/* ── OVERLAY CONTENT — pinned bottom-left ── */
+.proj-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 28px 28px 26px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.proj-category {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 2px;
+}
+
+.proj-title {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  color: var(--white);
+  /* prevent overflow if title is very long */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.proj-card.featured .proj-title { font-size: 1.6rem; }
+
+/* CTA row */
+.proj-cta-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px;
+}
+.proj-cta {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.75);
+  transition: color 0.2s;
+}
+.proj-card:hover .proj-cta { color: var(--white); }
+
+.proj-arrow {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  transition: transform 0.22s var(--ease), color 0.2s;
+}
+.proj-card:hover .proj-arrow {
+  transform: translateX(5px);
+  color: var(--white);
+}
