@@ -15,7 +15,7 @@
   background: var(--white);
   position: relative;
   overflow: hidden;
-  padding-left: 10%;  /* full bleed */
+  margin-left: 10% ; /* full bleed, cancels out section padding */
 }
 
 /* ── LEFT PANEL — white, content unchanged ── */
@@ -46,6 +46,7 @@
   height: 100%;
   min-height: 100vh;
   overflow: hidden;
+  padding-top: 80px;
 }
 .hero-photo {
   width: 100%;
@@ -56,7 +57,6 @@
   /* black & white filter */
   filter: grayscale(100%);
   transition: filter 0.4s ease;
-  padding-top: 100px; /* prevent cropping on mobile when photo becomes a banner */
 }
 /* subtle colour peek on hover — optional, remove if you prefer pure B&W always */
 .hero-photo-panel:hover .hero-photo {
@@ -73,9 +73,10 @@
 
 /* ── HERO TEXT (unchanged from before) ── */
 .hero-eyebrow {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-3); margin-bottom: 30px;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+  color: var(--text-2);
 }
 .status-dot {
   width: 7px; height: 7px; border-radius: 50%;
@@ -111,24 +112,84 @@
 
 /* ── RESPONSIVE — stack on mobile, photo becomes a banner ── */
 @media (max-width: 860px) {
-  .hero {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 320px;
-  }
-  .hero-left {
-    padding: calc(var(--nav-h) + 40px) 5% 48px;
-  }
-  .hero-photo-panel {
-    min-height: 320px;
-    order: -1;           /* photo appears above text on mobile */
-  }
+.hero {
+  grid-template-columns: 1fr;
+  grid-template-rows: 420px auto;
+  min-height: unset;
+}
+
+ .hero-photo {
+  object-fit: cover;
+  object-position: center -10%;
+} 
+  /* Photo panel — compact banner on top */
+.hero-photo-panel {
+  min-height: 420px;
+  height: 420px;
+  order: -1;
+  padding-top: var(--nav-h);
+}
   .hero-photo-fade {
-    /* on mobile fade bottom instead of left */
     top: auto; bottom: 0; left: 0;
-    width: 100%; height: 80px;
+    width: 100%; height: 100px;
     background: linear-gradient(to bottom, transparent 0%, var(--white) 100%);
   }
-  .hero-stats { gap: 24px; }
+
+  /* Left content — full width, comfortable padding */
+  .hero-left {
+    padding: 36px 6% 56px;
+    align-items: flex-start;
+  }
+
+  /* Hide watermark on mobile — just takes up space */
+  .hero-watermark { display: none; }
+
+  /* Eyebrow — bigger and easier to read */
+  .hero-eyebrow {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+  /* Name — scale down from 54px to something comfortable */
+  .hero-name {
+    font-size: clamp(40px, 11vw, 54px);
+    margin-bottom: 10px;
+  }
+
+  /* Role title */
+  .hero-title {
+    font-size: clamp(14px, 4vw, 18px);
+    margin-bottom: 18px;
+  }
+
+  /* Description */
+  .hero-desc {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 100%;
+  }
+
+  /* CTA buttons — stack on very small screens */
+  .hero-actions {
+    gap: 12px;
+  }
+
+  /* Stats — 2×2 grid on mobile */
+  .hero-stats {
+    gap: 20px 32px;
+    margin-top: 40px;
+    padding-top: 28px;
+  }
+  .stat-num { font-size: 1.9rem; }
+  .stat-label { font-size: 0.75rem; }
+}
+
+/* Extra small phones */
+@media (max-width: 390px) {
+  .hero-name { font-size: 36px; }
+  .hero-left { padding: 28px 5% 48px; }
+  .btn-primary, .btn-outline { padding: 11px 20px; font-size: 0.82rem; }
 }
 
 /* ── SKILLS ── */
@@ -228,4 +289,22 @@
   .tl-date { padding-left: 0; }
   .hero-stats { gap: 24px; }
   .section { padding: 72px 5%; }
+}
+
+/* ── PROJECT LOADING SKELETON ── */
+.projects-loading {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.proj-card-skeleton {
+  height: 380px;
+  border-radius: var(--r);
+  background: linear-gradient(90deg, var(--off-white) 25%, var(--surface) 50%, var(--off-white) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
