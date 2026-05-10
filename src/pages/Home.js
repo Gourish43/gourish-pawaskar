@@ -48,7 +48,7 @@ export default function Home() {
               <Link to="/contact" className="btn-outline">Let's Talk</Link>
             </div>
             <div className="hero-stats">
-              {[['2.5+','Years experience'],['4','Companies'],['3+','Products shipped'],['5','Certifications']].map(([n,l]) => (
+              {[['4+','Years experience'],['20+','Products shipped'],['5','Certifications']].map(([n,l]) => (
                 <div key={l}><div className="stat-num">{n}</div><div className="stat-label">{l}</div></div>
               ))}
             </div>
