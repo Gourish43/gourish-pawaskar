@@ -397,3 +397,11 @@
 .card-preview-note {
   font-size: 0.74rem; color: var(--text-3); text-align: center; margin-top: 10px;
 }
+
+/* ── SAVE ERROR ── */
+.apf-save-error {
+  background: #FEECEC; border: 1px solid #F5C6C6;
+  border-radius: var(--r-sm); padding: 10px 12px;
+  font-size: 0.78rem; color: #c0392b;
+  margin-bottom: 10px; line-height: 1.5;
+}

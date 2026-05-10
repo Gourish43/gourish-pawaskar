@@ -172,3 +172,16 @@
   .admin-sidebar { display: none; }
   .admin-main { padding: 24px 20px; }
 }
+
+/* ── LOADING SKELETONS ── */
+.admin-loading { display: flex; flex-direction: column; gap: 10px; }
+.admin-row-skeleton {
+  height: 72px; border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--off-white) 25%, var(--surface) 50%, var(--off-white) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

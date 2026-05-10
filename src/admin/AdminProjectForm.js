@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import {
   addProject, updateProject, getAllProjects,
@@ -9,56 +9,59 @@ import './AdminProjectForm.css';
 const genId = () => Math.random().toString(36).slice(2, 10);
 
 const DEFAULT_SECTION = (type = 'overview') => ({
-  id: genId(),
-  type,
-  customLabel: '',
-  title: '',
-  content: '',
-  bulletPoints: [''],
-  steps: [{ num: '01', name: '', desc: '' }],
-  metrics: [{ num: '', label: '' }],
-  highlightText: '',
-  images: [],         // [{id, url, caption, position}]
-  showHighlight: false,
-  showBullets: false,
-  showSteps: false,
-  showMetrics: false,
-  showImages: false,
+  id: genId(), type, customLabel: '', title: '', content: '',
+  bulletPoints: [''], steps: [{ num: '01', name: '', desc: '' }],
+  metrics: [{ num: '', label: '' }], highlightText: '', images: [],
+  showHighlight: false, showBullets: false, showSteps: false,
+  showMetrics: false, showImages: false,
 });
 
 export default function AdminProjectForm({ editId, onSave }) {
-  const existingProject = editId
-    ? getAllProjects().find(p => p.id === editId)
-    : null;
-
-  // ── BASIC FIELDS ──
-  const [title, setTitle]         = useState(existingProject?.title || '');
-  const [desc, setDesc]           = useState(existingProject?.desc || '');
-  const [year, setYear]           = useState(existingProject?.year || '');
-  const [visual, setVisual]       = useState(existingProject?.visual || 'pv-1');
-  const [tagInput, setTagInput]   = useState('');
-  const [tags, setTags]           = useState(existingProject?.tags || []);
-  const [heroStats, setHeroStats]   = useState(existingProject?.heroStats || [{ val: '', label: '' }]);
-  const [accentBg, setAccentBg]     = useState(existingProject?.accentBg || '');
-  const [thumbnail, setThumbnail]   = useState(existingProject?.thumbnail || null);
+  // const navigate = useNavigate();
+  const [ready, setReady]           = useState(false);
+  const [title, setTitle]           = useState('');
+  const [desc, setDesc]             = useState('');
+  const [year, setYear]             = useState('');
+  const [visual, setVisual]         = useState('pv-1');
+  const [tagInput, setTagInput]     = useState('');
+  const [tags, setTags]             = useState([]);
+  const [heroStats, setHeroStats]   = useState([{ val: '', label: '' }]);
+  const [accentBg, setAccentBg]     = useState('');
+  const [thumbnail, setThumbnail]   = useState(null);
   const [thumbDrag, setThumbDrag]   = useState(false);
   const thumbInputRef               = useRef(null);
-
-  // ── SECTIONS ──
-  const [sections, setSections] = useState(
-    existingProject?.sections?.length > 0
-      ? existingProject.sections
-      : [DEFAULT_SECTION('overview')]
-  );
-
-  // ── UI STATE ──
+  const [sections, setSections]     = useState([DEFAULT_SECTION('overview')]);
   const [activeSection, setActiveSection] = useState(0);
   const [showSectionPicker, setShowSectionPicker] = useState(false);
-  const [saving, setSaving]   = useState(false);
-  const [saved, setSaved]     = useState(false);
-  const [errors, setErrors]   = useState({});
-  const [previewTab, setPreviewTab] = useState('form'); // 'form' | 'preview'
+  const [saving, setSaving]         = useState(false);
+  const [saved, setSaved]           = useState(false);
+  const [saveError, setSaveError]   = useState('');
+  const [errors, setErrors]         = useState({});
+  const [previewTab, setPreviewTab] = useState('form');
   const fileRefs = useRef({});
+
+  // Load existing project async
+  useEffect(() => {
+    async function load() {
+      if (editId) {
+        const all = await getAllProjects();
+        const p   = all.find(x => x.id === editId);
+        if (p) {
+          setTitle(p.title || '');
+          setDesc(p.desc || '');
+          setYear(p.year || '');
+          setVisual(p.visual || 'pv-1');
+          setTags(p.tags || []);
+          setHeroStats(p.heroStats?.length > 0 ? p.heroStats : [{ val:'', label:'' }]);
+          setAccentBg(p.accentBg || '');
+          setThumbnail(p.thumbnail || null);
+          setSections(p.sections?.length > 0 ? p.sections : [DEFAULT_SECTION('overview')]);
+        }
+      }
+      setReady(true);
+    }
+    load();
+  }, [editId]);
 
   // ── TAG HANDLERS ──
   const addTag = () => {
@@ -186,26 +189,39 @@ export default function AdminProjectForm({ editId, onSave }) {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setSaving(true);
-    const slug = slugify(title);
-    const project = {
-      id: editId || genId(),
-      slug,
-      to: `/portfolio/${slug}`,
-      visual, thumbnail: thumbnail || null,
-      tags, title, desc, year,
-      heroStats: heroStats.filter(s => s.val && s.label),
-      accentBg: accentBg || undefined,
-      sections,
-      hardcoded: false,
-      createdAt: existingProject?.createdAt || Date.now(),
-      updatedAt: Date.now(),
-    };
-    if (editId) { updateProject(editId, project); }
-    else        { addProject(project); }
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => { onSave(); }, 1200);
+    setSaveError('');
+    try {
+      const slug = slugify(title);
+      const project = {
+        id: editId || genId(),
+        slug,
+        to: `/portfolio/${slug}`,
+        visual, thumbnail: thumbnail || null,
+        tags, title, desc, year,
+        heroStats: heroStats.filter(s => s.val && s.label),
+        accentBg: accentBg || undefined,
+        sections,
+        hardcoded: false,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      if (editId) { await updateProject(editId, project); }
+      else        { await addProject(project); }
+      setSaved(true);
+      setTimeout(() => { onSave(); }, 1000);
+    } catch (e) {
+      console.error('Save error:', e);
+      setSaveError('Failed to save to database. Check your connection and try again.');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (!ready) return (
+    <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'var(--off-white)'}}>
+      <div style={{fontFamily:'var(--sans)',color:'var(--text-3)',fontSize:'0.9rem'}}>Loading project…</div>
+    </div>
+  );
 
   const sec = sections[activeSection];
   const sectionTypeMeta = SECTION_TYPES.find(t => t.type === sec?.type) || SECTION_TYPES[0];
@@ -261,8 +277,9 @@ export default function AdminProjectForm({ editId, onSave }) {
         </div>
 
         <div className="apf-sidebar-save">
+          {saveError && <div className="apf-save-error">{saveError}</div>}
           <button className="apf-save-btn" onClick={handleSave} disabled={saving || saved}>
-            {saved ? '✓ Saved!' : saving ? 'Saving…' : (editId ? 'Save Changes' : 'Publish Project')}
+            {saved ? '✓ Saved!' : saving ? 'Saving to Supabase…' : (editId ? 'Save Changes' : 'Publish Project')}
           </button>
         </div>
       </aside>

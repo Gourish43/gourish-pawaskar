@@ -1,37 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
-import { getAllProjects } from '../store/projectStore';
+import { getAllProjects, seedIfNeeded } from '../store/projectStore';
 import './Portfolio.css';
 
-const FILTERS = ['All', 'UX Design', 'SaaS', 'Research', 'Front-end'];
-
+const FILTERS = ['All','UX Design','SaaS','Research','Front-end'];
 
 export default function Portfolio() {
-  const [active, setActive] = useState('All');
-  const [allProjects] = useState(() => getAllProjects());
+  const [active, setActive]     = useState('All');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading]   = useState(true);
 
   useEffect(() => {
+    async function load() {
+      await seedIfNeeded();
+      const all = await getAllProjects();
+      setProjects(all);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
     const els = document.querySelectorAll('.reveal');
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.08 });
     els.forEach(el => obs.observe(el));
     return () => obs.disconnect();
-  }, [active]);
+  }, [active, loading]);
 
-  const filtered = allProjects.filter(p => {
-    if (active === 'All') return true;
-    if (active === 'UX Design') return !p.hardcoded || ['trusting-news','esg-platform','defence-ux'].includes(p.slug);
-    if (active === 'SaaS') return (p.tags||[]).some(t => /saas|enterprise|esg/i.test(t));
-    if (active === 'Research') return (p.tags||[]).some(t => /research/i.test(t));
+  const filtered = projects.filter(p => {
+    if (active === 'All')       return true;
+    if (active === 'UX Design') return (p.tags||[]).some(t => /ux|ui|design|figma/i.test(t));
+    if (active === 'SaaS')      return (p.tags||[]).some(t => /saas|enterprise|esg|ai/i.test(t));
+    if (active === 'Research')  return (p.tags||[]).some(t => /research/i.test(t));
     if (active === 'Front-end') return (p.tags||[]).some(t => /react|front.end|html/i.test(t));
     return true;
   });
 
   return (
     <main>
-      {/* PAGE HEADER */}
       <div className="page-header">
         <div className="page-header-inner container">
           <div className="page-eyebrow">Selected work</div>
@@ -40,33 +50,32 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* FILTER BAR */}
       <div className="filter-bar">
         <div className="filter-inner container">
           {FILTERS.map(f => (
-            <button key={f} className={`filter-btn ${active === f ? 'active' : ''}`} onClick={() => setActive(f)}>
-              {f}
-            </button>
+            <button key={f} className={`filter-btn ${active === f ? 'active' : ''}`} onClick={() => setActive(f)}>{f}</button>
           ))}
         </div>
       </div>
 
-      {/* GRID */}
       <section className="portfolio-section">
         <div className="container">
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="portfolio-grid">
+              {[1,2,3,4].map(i => <div key={i} className="proj-card-skeleton" style={{height:'380px', borderRadius:'14px', background:'linear-gradient(90deg,#F0EEE9 25%,#E8E5DC 50%,#F0EEE9 75%)', backgroundSize:'200% 100%', animation:'shimmer 1.4s infinite'}} />)}
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="no-results">No projects match this filter.</div>
           ) : (
             <div className="portfolio-grid">
               {filtered.map((p, i) => (
-                <div key={p.slug} className={`reveal d${i % 3}`} style={i === 0 ? {gridColumn: filtered.length > 1 ? 'span 2' : 'span 1'} : {}}>
+                <div key={p.id} className={`reveal d${i % 3}`}
+                  style={i === 0 && filtered.length > 1 ? {gridColumn:'span 2'} : {}}>
                   <ProjectCard {...p} featured={i === 0 && filtered.length > 1} />
                 </div>
               ))}
             </div>
           )}
-
-          {/* CTA */}
           <div className="portfolio-cta reveal">
             <div className="cta-box">
               <h2 className="cta-title">Like what you see?</h2>
