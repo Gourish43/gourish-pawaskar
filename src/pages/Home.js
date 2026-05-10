@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
 import { getAllProjects } from '../store/projectStore';
+import mePic from './me.png';
 import './Home.css';
 
 function useReveal() {
@@ -22,28 +23,47 @@ export default function Home() {
     <main>
       {/* ── HERO ── */}
       <section className="hero">
-        <div className="hero-watermark" aria-hidden="true">UX</div>
-        <div className="hero-inner container">
-          <div className="hero-eyebrow">
-            <span className="status-dot" /> Available for opportunities
+        {/* LEFT — content, white bg, unchanged */}
+        <div className="hero-left">
+          <div className="hero-watermark" aria-hidden="true">UI/UX</div>
+          <div className="hero-inner">
+            <div className="hero-eyebrow">
+              <span className="status-dot" /> Available for opportunities
+            </div>
+            <h1 className="hero-name">
+              Gourish<br /><em>Pawaskar</em>
+            </h1>
+            <p className="hero-title">UI/UX Designer · SaaS &amp; AI Platforms</p>
+            <p className="hero-desc">
+              Product-focused designer crafting accessible, human-centred experiences for enterprise SaaS,
+              AI-driven platforms, and government systems. Based in Bengaluru, Karnataka.
+            </p>
+            <div className="hero-actions">
+              <Link to="/portfolio" className="btn-primary">View Portfolio</Link>
+              <Link to="/contact" className="btn-outline">Let's Talk</Link>
+            </div>
+            <div className="hero-stats">
+              {[['4+','Years experience'],['20+','Products shipped'],['5','Certifications']].map(([n,l]) => (
+                <div key={l}><div className="stat-num">{n}</div><div className="stat-label">{l}</div></div>
+              ))}
+            </div>
           </div>
-          <h1 className="hero-name">
-            Gourish<br /><em>Pawaskar</em>
-          </h1>
-          <p className="hero-title">UI/UX Designer · SaaS &amp; AI Platforms</p>
-          <p className="hero-desc">
-            Product-focused designer crafting accessible, human-centred experiences for enterprise SaaS,
-            AI-driven platforms, and government systems. Based in Bengaluru, Karnataka.
-          </p>
-          <div className="hero-actions">
-            <Link to="/portfolio" className="btn-primary">View Portfolio</Link>
-            <Link to="/contact" className="btn-outline">Let's Talk</Link>
-          </div>
-          <div className="hero-stats">
-            {[['2.5+','Years experience'],['4','Companies'],['3+','Products shipped'],['5','Certifications']].map(([n,l]) => (
-              <div key={l}><div className="stat-num">{n}</div><div className="stat-label">{l}</div></div>
-            ))}
-          </div>
+        </div>
+
+        {/* RIGHT — photo, black & white, full height */}
+        <div className="hero-photo-panel" aria-hidden="true">
+          {/*
+            Place your photo in the /public folder named "me.jpg"
+            e.g.  public/me.jpg
+            Then it will show here automatically.
+          */}
+          <img
+            src={mePic}
+            alt="Gourish Pawaskar"
+            className="hero-photo"
+          />
+          {/* subtle left-edge fade so photo blends into white content area */}
+          <div className="hero-photo-fade" />
         </div>
       </section>
 

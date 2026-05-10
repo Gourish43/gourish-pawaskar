@@ -10,20 +10,68 @@
 /* ── HERO ── */
 .hero {
   min-height: 100vh;
-  display: flex; align-items: center;
-  padding: calc(var(--nav-h) + 60px) 6% 80px;
+  display: grid;
+  grid-template-columns: 1fr 42%;   /* left content | right photo */
   background: var(--white);
-  position: relative; overflow: hidden;
+  position: relative;
+  overflow: hidden;
+  padding-left: 10%;  /* full bleed */
+}
+
+/* ── LEFT PANEL — white, content unchanged ── */
+.hero-left {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--nav-h) + 60px) 6% 80px 6%;
+  position: relative;
+  background: var(--white);
+  z-index: 1;
 }
 .hero-watermark {
-  position: absolute; right: -1%; top: 50%; transform: translateY(-52%);
+  position: absolute; right: -10%; top: 50%; transform: translateY(-52%);
   font-family: var(--serif);
-  font-size: clamp(130px, 20vw, 260px);
+  font-size: clamp(100px, 14vw, 200px);
   color: var(--off-white); user-select: none; pointer-events: none;
   line-height: 1; letter-spacing: -0.04em; z-index: 0;
 }
-.hero-inner { position: relative; z-index: 1; width: 100%; }
+.hero-inner {
+  position: relative; z-index: 1; width: 100%;
+  max-width: 560px;
+}
 
+/* ── RIGHT PANEL — photo full height, black & white ── */
+.hero-photo-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;  /* keep face in frame */
+  display: block;
+  /* black & white filter */
+  filter: grayscale(100%);
+  transition: filter 0.4s ease;
+  padding-top: 100px; /* prevent cropping on mobile when photo becomes a banner */
+}
+/* subtle colour peek on hover — optional, remove if you prefer pure B&W always */
+.hero-photo-panel:hover .hero-photo {
+  filter: grayscale(80%);
+}
+/* left-edge fade — photo bleeds softly into white content area */
+.hero-photo-fade {
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px; height: 100%;
+  background: linear-gradient(to right, var(--white) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ── HERO TEXT (unchanged from before) ── */
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
@@ -39,14 +87,12 @@
   0%,100% { box-shadow: 0 0 0 3px rgba(92,184,92,0.2); }
   50%      { box-shadow: 0 0 0 7px rgba(92,184,92,0.05); }
 }
-
 .hero-name {
   font-family: var(--serif);
   font-size: clamp(54px, 8vw, 100px);
   line-height: 1.03; letter-spacing: -0.035em; margin-bottom: 14px;
 }
 .hero-name em { font-style: italic; color: var(--text-2); }
-
 .hero-title {
   font-size: clamp(17px, 2.2vw, 24px); font-weight: 300;
   color: var(--text-2); margin-bottom: 28px; letter-spacing: -0.01em;
@@ -62,6 +108,28 @@
 }
 .stat-num { font-family: var(--serif); font-size: 2.4rem; line-height: 1; margin-bottom: 5px; }
 .stat-label { font-size: 0.78rem; color: var(--text-3); letter-spacing: 0.04em; }
+
+/* ── RESPONSIVE — stack on mobile, photo becomes a banner ── */
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 320px;
+  }
+  .hero-left {
+    padding: calc(var(--nav-h) + 40px) 5% 48px;
+  }
+  .hero-photo-panel {
+    min-height: 320px;
+    order: -1;           /* photo appears above text on mobile */
+  }
+  .hero-photo-fade {
+    /* on mobile fade bottom instead of left */
+    top: auto; bottom: 0; left: 0;
+    width: 100%; height: 80px;
+    background: linear-gradient(to bottom, transparent 0%, var(--white) 100%);
+  }
+  .hero-stats { gap: 24px; }
+}
 
 /* ── SKILLS ── */
 .skills-section { background: var(--off-white); }
